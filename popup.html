@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0b0d;
+      --surface:  #101217;
+      --surface2: #161920;
+      --raise:    #1c2029;
+      --hair:     #1e222b;
+      --hair2:    #171b22;
+
+      --text:     #e9ebef;
+      --text2:    #969ead;
+      --text3:    #596170;
+
+      --accent:   #6fa8d4;
+      --accent-d: #1a2833;
+      --clean:    #5cc98d;
+      --mal:      #ec7a76;
+
+      --font: "Segoe UI Variable Text", "SF Pro Text", -apple-system,
+              BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --mono: "SF Mono", "Cascadia Code", "JetBrains Mono", ui-monospace,
+              Consolas, monospace;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      width: 340px;
+      font-size: 13px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 13px 15px 12px;
+    }
+    .logo {
+      font-size: 9.5px; font-weight: 600; letter-spacing: .16em;
+      color: var(--text2); text-transform: uppercase;
+      padding: 4px 8px; border-radius: 5px;
+      background: var(--surface2); border: 1px solid var(--hair);
+    }
+    .tagline { font-size: 11px; color: var(--text3); }
+    .lang-btns { display: flex; gap: 2px; margin-left: auto; }
+    .lang-btn {
+      font-size: 9.5px; font-weight: 600; letter-spacing: .06em;
+      padding: 3px 8px; border-radius: 5px; cursor: pointer;
+      background: none; border: 1px solid transparent;
+      color: var(--text3); font-family: var(--font);
+      transition: all .14s;
+    }
+    .lang-btn:hover { color: var(--text2); }
+    .lang-btn.active { background: var(--surface2); border-color: var(--hair); color: var(--text); }
+    .lang-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+
+    /* ── Search ── */
+    .searchbar { display: flex; gap: 6px; padding: 0 15px 10px; }
+    .searchbar input {
+      flex: 1; min-width: 0;
+      font-family: var(--mono); font-size: 12.5px;
+      background: var(--surface); color: var(--text);
+      border: 1px solid var(--hair); border-radius: 8px;
+      padding: 9px 11px; outline: none;
+      transition: border-color .14s;
+    }
+    .searchbar input::placeholder { color: var(--text3); font-family: var(--font); font-size: 12px; }
+    .searchbar input:focus { border-color: var(--accent); }
+    .searchbar button {
+      font-family: var(--font); font-size: 12px; font-weight: 500;
+      padding: 9px 14px; border-radius: 8px; cursor: pointer; white-space: nowrap;
+      background: var(--surface2); border: 1px solid var(--hair); color: var(--text);
+      transition: .14s;
+    }
+    .searchbar button:hover { border-color: var(--accent); color: var(--accent); }
+    .searchbar button:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+
+    .msg { padding: 0 15px; font-size: 11px; color: var(--text3); line-height: 1.45; }
+    .msg:not(:empty) { padding-bottom: 11px; }
+    .msg.bad { color: var(--mal); }
+
+    /* ── Recent ── */
+    .block { padding: 12px 15px; border-top: 1px solid var(--hair2); }
+    .block-label {
+      font-size: 9px; font-weight: 600; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--text3); margin-bottom: 9px;
+    }
+    .hist { display: flex; flex-direction: column; gap: 3px; }
+    .hist-item {
+      display: flex; align-items: center; gap: 9px;
+      background: var(--surface); border: 1px solid var(--hair);
+      border-radius: 7px; padding: 7px 10px;
+      cursor: pointer; transition: border-color .14s;
+    }
+    .hist-item:hover { border-color: var(--raise); }
+    .hist-item:hover .hist-q { color: var(--text); }
+    .hist-item:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+    .hist-t {
+      font-size: 8.5px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--text3);
+      flex-shrink: 0; min-width: 44px;
+    }
+    .hist-q {
+      font-family: var(--mono); font-size: 11px; color: var(--text2);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
+      font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+    }
+    .empty { font-size: 11.5px; color: var(--text3); line-height: 1.5; }
+
+    /* ── Actions ── */
+    .actions { display: flex; gap: 6px; padding: 12px 15px; border-top: 1px solid var(--hair2); }
+    .act {
+      flex: 1;
+      font-family: var(--font); font-size: 12px; font-weight: 500;
+      padding: 9px 12px; border-radius: 8px; cursor: pointer;
+      background: var(--surface); border: 1px solid var(--hair); color: var(--text2);
+      transition: .14s;
+    }
+    .act:hover { color: var(--text); border-color: var(--raise); background: var(--surface2); }
+    .act:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+    .act.narrow { flex: 0 0 auto; }
+
+    /* ── Footer ── */
+    footer {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 15px;
+      font-size: 10.5px; color: var(--text3);
+      border-top: 1px solid var(--hair2);
+    }
+    .kbd {
+      font-family: var(--mono); font-size: 9.5px;
+      background: var(--surface2); border: 1px solid var(--hair);
+      border-radius: 5px; padding: 2px 7px; color: var(--text3);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">OSINT</div>
+    <div class="tagline" id="tagline">Threat Intelligence</div>
+    <div class="lang-btns">
+      <button class="lang-btn" id="btn-en" type="button">EN</button>
+      <button class="lang-btn" id="btn-tr" type="button">TR</button>
+    </div>
+  </header>
+
+  <div class="searchbar">
+    <input id="q" type="text" spellcheck="false" autocomplete="off"
+           placeholder="IP, domain, email or hash…" aria-label="Lookup">
+    <button id="go" type="button">Look up</button>
+  </div>
+  <div class="msg" id="q-msg"></div>
+
+  <div class="block">
+    <div class="block-label" id="hist-label">Recent</div>
+    <div class="hist" id="hist-list"></div>
+    <div class="empty" id="hist-empty">Nothing yet. Type an indicator above, or select one on any page and press Ctrl+Shift+O.</div>
+  </div>
+
+  <div class="actions">
+    <button class="act" id="btn-scan" type="button">Triage this page</button>
+    <button class="act narrow" id="btn-case" type="button">Case</button>
+    <button class="act narrow" id="btn-settings" type="button">Settings</button>
+  </div>
+
+  <footer>
+    <span id="footer">Authorized security research only</span>
+    <span class="kbd">Ctrl+Shift+O</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

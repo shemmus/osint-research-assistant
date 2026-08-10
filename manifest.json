@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "OSINT Research Assistant",
+  "short_name": "OSINT Assistant",
+  "version": "2.3.1",
+  "description": "Page triage, pivot graph and STIX export. 16 free threat intel sources, optional keys. Nothing leaves your device.",
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://ip-api.com/*",
+    "https://internetdb.shodan.io/*",
+    "https://api.greynoise.io/*",
+    "https://check.torproject.org/*",
+    "https://rdap.org/*",
+    "https://crt.sh/*",
+    "https://dns.google/*",
+    "https://hashlookup.circl.lu/*",
+    "https://cve.circl.lu/*",
+    "https://api.mailcheck.ai/*",
+    "https://urlscan.io/*",
+    "https://threatfox.abuse.ch/*",
+    "https://urlhaus.abuse.ch/*",
+    "https://feodotracker.abuse.ch/*",
+    "https://openphish.com/*",
+    "https://otx.alienvault.com/*",
+    "https://stat.ripe.net/*",
+    "https://www.virustotal.com/*",
+    "https://api.shodan.io/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "OSINT Research Assistant"
+  },
+  "options_page": "options.html",
+  "commands": {
+    "lookup-selection": {
+      "suggested_key": { "default": "Ctrl+Shift+O", "mac": "Command+Shift+O" },
+      "description": "OSINT lookup on selected text"
+    },
+    "scan-page": {
+      "suggested_key": { "default": "Ctrl+Shift+U", "mac": "Command+Shift+U" },
+      "description": "Toggle page scanner"
+    }
+  },
+  "icons": {
+    "16":  "icons/icon16.png",
+    "32":  "icons/icon32.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "minimum_chrome_version": "111"
+}

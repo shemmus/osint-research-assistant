@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Lint and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install test dependencies
+        working-directory: test
+        run: npm ci || npm install
+
+      - name: Syntax check every script
+        run: |
+          for f in background.js content.js popup.js options.js; do
+            node --check "$f"
+          done
+
+      - name: Validate manifest
+        run: |
+          node -e "
+            const m = require('./manifest.json');
+            if (m.manifest_version !== 3) throw new Error('expected MV3');
+            if (m.description.length > 132) throw new Error('description too long: ' + m.description.length);
+            if (m.host_permissions.includes('<all_urls>')) throw new Error('<all_urls> crept back in');
+            console.log('manifest ok — v' + m.version + ', ' + m.host_permissions.length + ' hosts');
+          "
+
+      - name: Unit tests (refang, IOC detection, scan patterns)
+        working-directory: test
+        run: node unit.js
+
+      - name: Integration tests (panel, triage, graph, exports)
+        working-directory: test
+        run: node harness.js
+
+  live-sources:
+    name: Upstream source health
+    runs-on: ubuntu-latest
+    # Upstream feeds are third-party and change without notice. This job is
+    # informational: it tells us a source died, it does not fail the build.
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Probe every keyless source
+        working-directory: test
+        run: node sources.js

@@ -1,0 +1,13 @@
+{
+  "name": "osint-assistant-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Test suite for the OSINT Research Assistant extension",
+  "scripts": {
+    "test": "node unit.js && node harness.js",
+    "sources": "node sources.js"
+  },
+  "dependencies": {
+    "jsdom": "^24.0.0"
+  }
+}

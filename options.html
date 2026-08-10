@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OSINT Research Assistant — Settings</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0b0d;
+      --surface:  #101217;
+      --surface2: #161920;
+      --raise:    #1c2029;
+      --hair:     #1e222b;
+      --hair2:    #171b22;
+
+      --text:     #e9ebef;
+      --text2:    #969ead;
+      --text3:    #596170;
+
+      --accent:   #6fa8d4;
+      --clean:    #5cc98d;
+      --mal:      #ec7a76;
+
+      --font: "Segoe UI Variable Text", "SF Pro Text", -apple-system,
+              BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --mono: "SF Mono", "Cascadia Code", "JetBrains Mono", ui-monospace,
+              Consolas, monospace;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 56px 24px 80px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: 620px; margin: 0 auto; }
+
+    header { padding-bottom: 24px; margin-bottom: 8px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .logo {
+      font-size: 10px; font-weight: 600; letter-spacing: .16em;
+      color: var(--text2); text-transform: uppercase;
+      padding: 4px 8px; border-radius: 5px;
+      background: var(--surface2); border: 1px solid var(--hair);
+    }
+    h1 { font-size: 17px; font-weight: 600; letter-spacing: -.015em; }
+    .sub { font-size: 12px; color: var(--text3); }
+
+    section { margin-bottom: 34px; }
+    .sec-label {
+      font-size: 9px; font-weight: 600; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--text3);
+      margin-bottom: 4px; padding-bottom: 9px;
+      border-bottom: 1px solid var(--hair);
+    }
+
+    .opt {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 13px 0; border-bottom: 1px solid var(--hair2);
+    }
+    .opt:last-child { border-bottom: none; }
+    .opt-main { flex: 1; min-width: 0; }
+    .opt-name { font-size: 13px; color: var(--text); font-weight: 500; letter-spacing: -.005em; }
+    .opt-desc { font-size: 11.5px; color: var(--text3); margin-top: 2px; line-height: 1.5; }
+    code {
+      font-family: var(--mono); font-size: 11px;
+      background: var(--surface2); border: 1px solid var(--hair);
+      padding: 2px 6px; border-radius: 5px; color: var(--text2);
+    }
+
+    /* ── Switch ── */
+    .sw { position: relative; width: 34px; height: 20px; flex-shrink: 0; margin-top: 3px; }
+    .sw input { opacity: 0; width: 0; height: 0; }
+    .sw span {
+      position: absolute; inset: 0; cursor: pointer;
+      background: var(--surface2); border: 1px solid var(--hair);
+      border-radius: 20px; transition: .18s;
+    }
+    .sw span::before {
+      content: ''; position: absolute;
+      width: 12px; height: 12px; left: 3px; top: 3px;
+      background: var(--text3); border-radius: 50%; transition: .18s;
+    }
+    .sw input:checked + span { background: var(--raise); border-color: var(--raise); }
+    .sw input:checked + span::before { transform: translateX(14px); background: var(--clean); }
+    .sw input:focus-visible + span { outline: 1px solid var(--accent); outline-offset: 2px; }
+
+    /* ── Segmented ── */
+    .seg {
+      display: flex; gap: 2px; flex-shrink: 0;
+      background: var(--surface); border: 1px solid var(--hair);
+      border-radius: 7px; padding: 2px;
+    }
+    .seg button {
+      font-family: var(--font); font-size: 11px; font-weight: 500;
+      padding: 4px 11px; border-radius: 5px; cursor: pointer;
+      background: none; border: none; color: var(--text3);
+      transition: .14s;
+    }
+    .seg button:hover { color: var(--text2); }
+    .seg button.active { background: var(--raise); color: var(--text); }
+    .seg button:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; }
+
+    /* ── Buttons ── */
+    .btn {
+      font-family: var(--font); font-size: 12px; font-weight: 500;
+      padding: 8px 14px; border-radius: 7px; cursor: pointer;
+      background: var(--surface); border: 1px solid var(--hair); color: var(--text2);
+      transition: .14s;
+    }
+    .btn:hover { color: var(--text); border-color: var(--raise); background: var(--surface2); }
+    .btn.danger:hover { color: var(--mal); border-color: color-mix(in srgb, var(--mal) 40%, transparent); }
+    .btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-top: 10px; }
+
+    .saved { font-size: 11px; color: var(--clean); opacity: 0; transition: opacity .2s; }
+    .saved.show { opacity: 1; }
+
+    .types {
+      font-family: var(--mono); font-size: 10px; color: var(--text3);
+      margin-top: 3px; letter-spacing: -.01em;
+    }
+
+    .notice {
+      font-size: 11.5px; line-height: 1.5; color: var(--text2);
+      background: var(--surface); border: 1px solid var(--hair);
+      border-radius: 7px; padding: 10px 12px; margin: 10px 0 4px;
+    }
+    .notice b { color: var(--text); font-weight: 600; }
+
+    .nc {
+      font-family: var(--font); font-size: 9px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: #c9a24a; border: 1px solid #c9a24a55;
+      background: #2a220f; border-radius: 4px;
+      padding: 1px 5px; margin-left: 6px; cursor: help;
+    }
+
+    .keyin {
+      flex-shrink: 0; width: 190px;
+      font-family: var(--mono); font-size: 11px;
+      background: var(--surface); color: var(--text);
+      border: 1px solid var(--hair); border-radius: 7px;
+      padding: 7px 10px; outline: none; margin-top: 2px;
+      transition: border-color .14s;
+    }
+    .keyin::placeholder { font-family: var(--font); color: var(--text3); }
+    .keyin:focus { border-color: var(--accent); }
+    .keyin.set { border-color: var(--clean); }
+
+    .health {
+      font-family: var(--mono); font-size: 10px; margin-top: 4px;
+      letter-spacing: -.01em; color: var(--text3);
+    }
+    .health:empty { display: none; }
+    .health.good { color: var(--clean); }
+    .health.warn { color: #c9a24a; }
+    .health.bad  { color: var(--mal); }
+
+    footer {
+      margin-top: 40px; padding-top: 18px;
+      border-top: 1px solid var(--hair);
+      font-size: 11px; color: var(--text3);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">OSINT</div>
+        <div>
+          <h1 id="h-title">Settings</h1>
+          <div class="sub" id="h-sub">OSINT Research Assistant</div>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="sec-label" id="l-how">How it works</div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-h1">Select an indicator on any page, then right-click or press Ctrl+Shift+O</div>
+          <div class="opt-desc" id="d-h1">Works with defanged text too — 185.220.101[.]45 and hxxps://evil[.]com are understood.</div>
+        </div>
+      </div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-h2">Or type one straight into the toolbar popup</div>
+          <div class="opt-desc" id="d-h2">Results open in a floating panel on the page. The Summary tab answers the question; the other tabs show the detail.</div>
+        </div>
+      </div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-h3">Scan a whole page for indicators</div>
+          <div class="opt-desc" id="d-h3">Ctrl+Shift+U, or the button in the popup. Every IP, domain, email and hash on the page gets underlined — click any to look it up.</div>
+        </div>
+      </div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-h4">Supported indicators</div>
+          <div class="types">IPv4 · IPv6 · Domain · URL · Email · MD5 · SHA-1 · SHA-256</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-label" id="l-general">General</div>
+
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-lang">Language</div>
+          <div class="opt-desc" id="d-lang">Applies to the results panel and this page.</div>
+        </div>
+        <div class="seg" id="seg-lang">
+          <button type="button" data-v="en">EN</button>
+          <button type="button" data-v="tr">TR</button>
+        </div>
+      </div>
+
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-theme">Panel theme</div>
+          <div class="opt-desc" id="d-theme">Auto follows your system setting.</div>
+        </div>
+        <div class="seg" id="seg-theme">
+          <button type="button" data-v="auto" id="th-auto">Auto</button>
+          <button type="button" data-v="dark" id="th-dark">Dark</button>
+          <button type="button" data-v="light" id="th-light">Light</button>
+        </div>
+      </div>
+
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-remember">Remember panel position</div>
+          <div class="opt-desc" id="d-remember">Reopen the panel where you last dragged it.</div>
+        </div>
+        <label class="sw"><input type="checkbox" id="cb-remember"><span></span></label>
+      </div>
+
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-history">Keep lookup history</div>
+          <div class="opt-desc" id="d-history">Stores the last 50 lookups on this device only.</div>
+        </div>
+        <label class="sw"><input type="checkbox" id="cb-history"><span></span></label>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-label" id="l-feeds">Threat feeds</div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-feed">Local threat index</div>
+          <div class="opt-desc" id="d-feed">Downloaded once and matched on your device, so page triage costs no API requests.</div>
+          <div class="types" id="feed-stat">—</div>
+        </div>
+        <button class="btn" id="btn-feed" type="button">Refresh now</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-label" id="l-keys">Optional API keys</div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-desc" id="d-keys">Everything works without these. A key only adds a source — nothing stops working if you leave them empty. Keys are stored on this device only and never synced.</div>
+        </div>
+      </div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name">VirusTotal</div>
+          <div class="opt-desc" id="d-vt">70+ antivirus engines for IPs, domains and file hashes. Free tier: 4 requests/min.</div>
+        </div>
+        <input class="keyin" id="key-vt" type="password" placeholder="API key" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name">Shodan</div>
+          <div class="opt-desc" id="d-shodan">Full host detail: banners, product versions and CVEs beyond the free InternetDB view.</div>
+        </div>
+        <input class="keyin" id="key-shodan" type="password" placeholder="API key" autocomplete="off" spellcheck="false">
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-label" id="l-services">Services</div>
+      <div class="notice" id="nc-notice"></div>
+      <div id="svc-list"></div>
+    </section>
+
+    <section>
+      <div class="sec-label" id="l-shortcuts">Keyboard shortcuts</div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-sc1">Lookup selected text</div>
+          <div class="opt-desc"><code>Ctrl+Shift+O</code></div>
+        </div>
+      </div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-sc2">Toggle page scanner</div>
+          <div class="opt-desc"><code>Ctrl+Shift+U</code></div>
+        </div>
+      </div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-desc" id="d-shortcuts">Change these at <code>chrome://extensions/shortcuts</code></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-label" id="l-data">Data</div>
+      <div class="actions">
+        <button class="btn" id="btn-cache" type="button">Clear cache</button>
+        <button class="btn danger" id="btn-history" type="button">Clear history</button>
+        <button class="btn" id="btn-health" type="button">Reset source stats</button>
+        <button class="btn danger" id="btn-reset" type="button">Reset settings</button>
+        <span class="saved" id="saved">Saved</span>
+      </div>
+    </section>
+
+    <footer id="foot">
+      Everything is stored on your device. No account, no server, no telemetry.
+    </footer>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
