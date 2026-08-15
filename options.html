@@ -43,11 +43,13 @@
     header { padding-bottom: 24px; margin-bottom: 8px; }
     .brand { display: flex; align-items: center; gap: 10px; }
     .logo {
+      display: flex; align-items: center; gap: 6px;
       font-size: 10px; font-weight: 600; letter-spacing: .16em;
       color: var(--text2); text-transform: uppercase;
-      padding: 4px 8px; border-radius: 5px;
+      padding: 4px 8px 4px 6px; border-radius: 5px;
       background: var(--surface2); border: 1px solid var(--hair);
     }
+    .logo svg { flex-shrink: 0; display: block; color: var(--accent); }
     h1 { font-size: 17px; font-weight: 600; letter-spacing: -.015em; }
     .sub { font-size: 12px; color: var(--text3); }
 
@@ -178,7 +180,13 @@
   <div class="wrap">
     <header>
       <div class="brand">
-        <div class="logo">OSINT</div>
+        <div class="logo">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2.4"/>
+            <line x1="19" y1="19" x2="15.2" y2="15.2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+          OSINT
+        </div>
         <div>
           <h1 id="h-title">Settings</h1>
           <div class="sub" id="h-sub">OSINT Research Assistant</div>
@@ -204,6 +212,12 @@
         <div class="opt-main">
           <div class="opt-name" id="n-h3">Scan a whole page for indicators</div>
           <div class="opt-desc" id="d-h3">Ctrl+Shift+U, or the button in the popup. Every IP, domain, email and hash on the page gets underlined — click any to look it up.</div>
+        </div>
+      </div>
+      <div class="opt">
+        <div class="opt-main">
+          <div class="opt-name" id="n-h5">Walk the infrastructure with the pivot graph</div>
+          <div class="opt-desc" id="d-h5">Looking up an IP, domain, URL or ASN shows a highlighted Graph button next to the result. Opens a node map — IP → announcing AS → other prefixes on that AS; domain → resolved addresses → name servers → subdomains from certificate transparency. Double-click a node to expand it.</div>
         </div>
       </div>
       <div class="opt">

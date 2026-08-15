@@ -501,7 +501,21 @@
     #graph-btn:focus-visible, #case-btn:focus-visible {
       outline: 1px solid var(--accent); outline-offset: 1px;
     }
-    #graph-btn { color: var(--accent); }
+    /* Graph is a distinct feature (a whole pivot view), not a text action like
+       copy/report/case — give it a filled chip + icon so it reads as its own
+       affordance instead of blending into the row. */
+    #graph-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      color: var(--accent);
+      background: var(--accent-d);
+      border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    #graph-btn:hover {
+      background: var(--accent-d);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    #graph-btn svg { flex-shrink: 0; display: block; }
 
     /* ── Defang note ─────────────────────────────────────────────────────── */
     .defang-note {
@@ -2846,7 +2860,7 @@
       </div>
       <div id="qbar">
         <span id="qtext" title="${esc(query)}">${esc(query)}</span>
-        ${GRAPHABLE.includes(type) ? `<button id="graph-btn">${esc(t('graphBtn'))}</button>` : ''}
+        ${GRAPHABLE.includes(type) ? `<button id="graph-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="5" cy="6" r="3" fill="currentColor"/><circle cx="19" cy="6" r="3" fill="currentColor"/><circle cx="12" cy="19" r="3" fill="currentColor"/><path d="M7.5 7.5L10 16M16.5 7.5L14 16" stroke="currentColor" stroke-width="1.6"/></svg>${esc(t('graphBtn'))}</button>` : ''}
         <button id="case-btn">${esc(t('addToCase'))}</button>
         <button id="report-btn">${esc(t('report'))}</button>
         <button id="copy-btn">${esc(t('copy'))}</button>
@@ -3004,6 +3018,16 @@
       ox = e.clientX; oy = e.clientY;
       const r = panel.getBoundingClientRect();
       sx = r.left; sy = r.top;
+      // The graph panel starts centered via `left:50%; transform:translate(-50%,-50%)`.
+      // getBoundingClientRect() already accounts for that transform, but the
+      // transform itself is still in the stylesheet — so pinning left/top to
+      // the rect without clearing it applies the -50%/-50% shift a second
+      // time, throwing the panel toward the top-left corner. Freeze the
+      // transform away up front so left/top become the only source of truth.
+      panel.style.transform = 'none';
+      panel.style.left  = sx + 'px';
+      panel.style.top   = sy + 'px';
+      panel.style.right = 'auto';
       const mv = m => {
         panel.style.left  = (sx + m.clientX - ox) + 'px';
         panel.style.top   = (sy + m.clientY - oy) + 'px';

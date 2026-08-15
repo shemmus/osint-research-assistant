@@ -657,8 +657,12 @@ const wait = (ms = 30) => new Promise(r => setTimeout(r, ms));
     await wait(80);
 
     const panelHTML = env.panel().querySelector('#content').innerHTML;
-    truthy('no <img> tag materialised from an ISP field', !env.panel().querySelector('img'));
-    truthy('no <svg> tag materialised from an org field', !env.panel().querySelector('svg'));
+    // Scoped to #content — that's where untrusted API fields render. The
+    // panel chrome itself (e.g. the graph button) legitimately contains a
+    // static, hardcoded <svg> icon that has nothing to do with API data.
+    const content = env.panel().querySelector('#content');
+    truthy('no <img> tag materialised from an ISP field', !content.querySelector('img'));
+    truthy('no <svg> tag materialised from an org field', !content.querySelector('svg'));
     truthy('payload text is present, but inert (as text)', panelHTML.includes('onerror=window.__xss'));
     truthy('the injected handler never actually ran', env.window.__xss !== 1 && env.window.__xss2 !== 1);
     truthy('malware family from a feed hit is escaped', !env.panel().querySelector('.cve-card img'));

@@ -1,5 +1,5 @@
 // ── Context Menus ──────────────────────────────────────────────────────────
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(details => {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id: 'osint-lookup',
@@ -12,6 +12,14 @@ chrome.runtime.onInstalled.addListener(() => {
       contexts: ['page', 'selection']
     });
   });
+
+  // First-ever install: open the settings page, which doubles as a quick-start
+  // guide ("How it works" is the first section). The toolbar popup is easy to
+  // miss right after install, so this is the one guaranteed moment to show a
+  // brand-new user what the shortcuts do.
+  if (details.reason === 'install') {
+    chrome.runtime.openOptionsPage();
+  }
 });
 
 // ── Per-service timeouts ───────────────────────────────────────────────────
@@ -714,15 +722,51 @@ async function tor(query, type) {
   };
 }
 
+// Registries only hold a record for the *registered* domain, not arbitrary
+// subdomains — rdap.org 400s on "en.wikipedia.org" because Public Interest
+// Registry has no record for anything but "wikipedia.org". This is not a
+// full public-suffix-list implementation, just the two-label suffixes common
+// enough to matter (co.uk, com.tr, com.au, ...); anything else falls back to
+// "last two labels", which is right for the overwhelming majority of TLDs.
+const TWO_LABEL_SUFFIXES = new Set([
+  'co.uk', 'org.uk', 'gov.uk', 'ac.uk', 'net.uk', 'sch.uk', 'nhs.uk', 'police.uk',
+  'co.jp', 'ne.jp', 'or.jp', 'ac.jp', 'go.jp',
+  'com.au', 'net.au', 'org.au', 'edu.au', 'gov.au', 'id.au',
+  'co.nz', 'net.nz', 'org.nz', 'govt.nz',
+  'co.in', 'net.in', 'org.in', 'firm.in', 'gen.in', 'ind.in',
+  'com.tr', 'net.tr', 'org.tr', 'gov.tr', 'edu.tr',
+  'com.br', 'net.br', 'org.br', 'gov.br',
+  'co.za', 'net.za', 'org.za', 'gov.za', 'web.za',
+  'com.mx', 'net.mx', 'org.mx', 'gob.mx',
+  'co.il', 'net.il', 'org.il', 'gov.il',
+  'com.cn', 'net.cn', 'org.cn', 'gov.cn',
+  'co.kr', 'ne.kr', 'or.kr', 'go.kr',
+  'com.sg', 'net.sg', 'org.sg', 'gov.sg',
+  'com.hk', 'net.hk', 'org.hk', 'gov.hk',
+  'com.tw', 'net.tw', 'org.tw', 'gov.tw',
+  'com.ar', 'net.ar', 'org.ar', 'gob.ar',
+  'co.id', 'net.id', 'org.id', 'go.id',
+  'com.my', 'net.my', 'org.my', 'gov.my'
+]);
+
+function registrableDomain(host) {
+  const labels = host.toLowerCase().split('.').filter(Boolean);
+  if (labels.length <= 2) return host;
+  const lastTwo = labels.slice(-2).join('.');
+  const take = TWO_LABEL_SUFFIXES.has(lastTwo) ? 3 : 2;
+  return labels.slice(-take).join('.');
+}
+
 // ── RDAP / Whois  (free, no key) ──────────────────────────────────────────
 async function rdap(query, type) {
   let url, lookupDomain = query;
   if (type === 'ip' || type === 'ipv6') {
     url = `https://rdap.org/ip/${query}`;
   } else if (type === 'domain') {
-    url = `https://rdap.org/domain/${query}`;
+    lookupDomain = registrableDomain(query);
+    url = `https://rdap.org/domain/${lookupDomain}`;
   } else if (type === 'url') {
-    try { lookupDomain = new URL(query).hostname; } catch (_) {}
+    try { lookupDomain = registrableDomain(new URL(query).hostname); } catch (_) {}
     url = `https://rdap.org/domain/${lookupDomain}`;
   } else {
     return { _na: true };
@@ -761,10 +805,13 @@ async function crtsh(query, type) {
   if (type !== 'domain' && type !== 'url') return { _na: true };
   const url = `https://crt.sh/?q=${encodeURIComponent(domain)}&output=json`;
   // crt.sh intermittently answers 404/5xx under load; a genuinely empty result
-  // comes back as 200 with []. So a 404 here is a server hiccup — retry once.
+  // comes back as 200 with []. So a 404/5xx here is a server hiccup — retry with
+  // backoff before giving up.
   let r = await fetchT(url, {}, 'crtsh');
-  if (!r.ok && (r.status === 404 || r.status >= 500)) {
-    await new Promise(res => setTimeout(res, 900));
+  const backoffsMs = [900, 2500];
+  for (const wait of backoffsMs) {
+    if (r.ok || (r.status !== 404 && r.status < 500)) break;
+    await new Promise(res => setTimeout(res, wait));
     r = await fetchT(url, {}, 'crtsh');
   }
   if (!r.ok) return { error: `crt.sh is unavailable right now (HTTP ${r.status}). It throttles under load — try again in a moment.` };

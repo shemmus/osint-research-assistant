@@ -70,6 +70,8 @@ const UI = {
     h2d: 'Results open in a floating panel on the page. The Summary tab answers the question; the other tabs show the detail.',
     h3: 'Scan a whole page for indicators',
     h3d: 'Ctrl+Shift+U, or the button in the popup. Every IP, domain, email and hash on the page gets underlined — click any to look it up.',
+    h5: 'Walk the infrastructure with the pivot graph',
+    h5d: 'Looking up an IP, domain, URL or ASN shows a highlighted Graph button next to the result. Opens a node map — IP → announcing AS → other prefixes on that AS; domain → resolved addresses → name servers → subdomains from certificate transparency. Double-click a node to expand it.',
     h4: 'Supported indicators',
     feeds: 'Threat feeds',
     feedName: 'Local threat index',
@@ -107,6 +109,8 @@ const UI = {
     h2d: 'Sonuçlar sayfada kayan bir panelde açılır. Özet sekmesi sorunun cevabını verir, diğer sekmeler ayrıntıyı gösterir.',
     h3: 'Tüm sayfayı göstergeler için tarayın',
     h3d: 'Ctrl+Shift+U veya penceredeki düğme. Sayfadaki her IP, domain, e-posta ve hash altı çizili olur — tıklayarak sorgularsınız.',
+    h5: 'Pivot grafiği ile altyapıyı gezin',
+    h5d: 'Bir IP, domain, URL veya ASN sorguladığınızda sonucun yanında vurgulanmış bir Grafik düğmesi belirir. Bir düğüm haritası açılır — IP → duyuran AS → o AS\'nin diğer prefix\'leri; domain → çözümlenen adresler → name server\'lar → sertifika şeffaflığından alt domainler. Bir düğüme çift tıklayarak genişletin.',
     h4: 'Desteklenen göstergeler',
     feeds: 'Tehdit feed\'leri',
     feedName: 'Yerel tehdit indeksi',
@@ -185,6 +189,8 @@ function render() {
   $('d-h2').textContent   = u.h2d;
   $('n-h3').textContent   = u.h3;
   $('d-h3').textContent   = u.h3d;
+  $('n-h5').textContent   = u.h5;
+  $('d-h5').textContent   = u.h5d;
   $('n-h4').textContent   = u.h4;
   $('nc-notice').innerHTML  = u.ncNotice;
   $('l-keys').textContent   = u.keysLabel;

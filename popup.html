@@ -22,6 +22,14 @@
       --clean:    #5cc98d;
       --mal:      #ec7a76;
 
+      /* Muted, desaturated per-type hues — recognisable at a glance without
+         competing with the clean/malicious signal colors above. */
+      --t-ip:     #6fa8d4;
+      --t-domain: #9c93d1;
+      --t-url:    #6fb3ad;
+      --t-email:  #cf9f66;
+      --t-hash:   #b98bb3;
+
       --font: "Segoe UI Variable Text", "SF Pro Text", -apple-system,
               BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
       --mono: "SF Mono", "Cascadia Code", "JetBrains Mono", ui-monospace,
@@ -43,11 +51,13 @@
       padding: 13px 15px 12px;
     }
     .logo {
+      display: flex; align-items: center; gap: 6px;
       font-size: 9.5px; font-weight: 600; letter-spacing: .16em;
       color: var(--text2); text-transform: uppercase;
-      padding: 4px 8px; border-radius: 5px;
+      padding: 4px 8px 4px 6px; border-radius: 5px;
       background: var(--surface2); border: 1px solid var(--hair);
     }
+    .logo svg { flex-shrink: 0; display: block; color: var(--accent); }
     .tagline { font-size: 11px; color: var(--text3); }
     .lang-btns { display: flex; gap: 2px; margin-left: auto; }
     .lang-btn {
@@ -103,9 +113,14 @@
     .hist-item:hover .hist-q { color: var(--text); }
     .hist-item:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
     .hist-t {
+      display: flex; align-items: center; gap: 5px;
       font-size: 8.5px; font-weight: 600; letter-spacing: .1em;
       text-transform: uppercase; color: var(--text3);
-      flex-shrink: 0; min-width: 44px;
+      flex-shrink: 0; min-width: 48px;
+    }
+    .hist-dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+      background: var(--dot, var(--text3));
     }
     .hist-q {
       font-family: var(--mono); font-size: 11px; color: var(--text2);
@@ -147,7 +162,13 @@
 </head>
 <body>
   <header>
-    <div class="logo">OSINT</div>
+    <div class="logo">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2.4"/>
+        <line x1="19" y1="19" x2="15.2" y2="15.2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      OSINT
+    </div>
     <div class="tagline" id="tagline">Threat Intelligence</div>
     <div class="lang-btns">
       <button class="lang-btn" id="btn-en" type="button">EN</button>

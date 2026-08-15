@@ -35,6 +35,11 @@ const TYPE_LABEL = {
   email: 'Email', md5: 'MD5', sha1: 'SHA-1', sha256: 'SHA-256', unknown: '?'
 };
 
+const TYPE_DOT = {
+  ip: 'var(--t-ip)', ipv6: 'var(--t-ip)', domain: 'var(--t-domain)', url: 'var(--t-url)',
+  email: 'var(--t-email)', md5: 'var(--t-hash)', sha1: 'var(--t-hash)', sha256: 'var(--t-hash)'
+};
+
 let lang = 'en';
 const S = () => (lang === 'tr' ? TR : EN);
 const $ = id => document.getElementById(id);
@@ -121,7 +126,7 @@ async function renderHistory() {
 
   list.innerHTML = hist.slice(0, 6).map(h => `
     <div class="hist-item" role="button" tabindex="0" data-q="${esc(h.q)}">
-      <span class="hist-t">${esc(TYPE_LABEL[h.type] || h.type)}</span>
+      <span class="hist-t" style="--dot:${TYPE_DOT[h.type] || 'var(--text3)'}"><span class="hist-dot"></span>${esc(TYPE_LABEL[h.type] || h.type)}</span>
       <span class="hist-q" title="${esc(h.q)}">${esc(h.q)}</span>
     </div>`).join('');
 
