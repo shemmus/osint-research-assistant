@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "OSINT Research Assistant",
   "short_name": "OSINT Assistant",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Page triage, pivot graph and STIX export. 16 free threat intel sources, optional keys. Nothing leaves your device.",
   "permissions": [
     "contextMenus",
